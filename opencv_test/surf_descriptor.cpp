@@ -6,8 +6,8 @@ BOOST_PYTHON_MODULE(surfmodule)
     class_<MyList>("MyList")
         .def(vector_indexing_suite<MyList>() );
 
-    class_<SURFDescriptor>("SURFDescriptor", init<std::string, std::string>())
-				.def("calculateMatchingPoints", &SURFDescriptor::calculateMatchingPoints)
+    class_<SURFDescriptor>("SURFDescriptor", init<std::string, std::string, float>())
+		.def("calculateMatchingPoints", &SURFDescriptor::calculateMatchingPoints)
         .def("getSrcPnts", &SURFDescriptor::getSrcPnts)
         .def("getTrgPnts", &SURFDescriptor::getTrgPnts)
         ;

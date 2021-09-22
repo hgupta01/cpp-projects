@@ -72,10 +72,11 @@ int main() {
 
   std::cout << cloud_ptr->points.size() << "\n";
 
-  for (int i=0; i<5; ++i){
-    std::cout << cloud_ptr->points[i].x << " " << cloud_ptr->points[i].y << " "
-	<< cloud_ptr->points[i].z <<  cloud_ptr->points[i].rgba << "\n";
-  }
+  // for (int i=0; i<5; ++i){
+  //   std::cout << cloud_ptr->points[i].x << " " << cloud_ptr->points[i].y << " "
+	// << cloud_ptr->points[i].z <<  cloud_ptr->points[i].rgba << "\n";
+  // }
+
   // ----------------------------------------------------------------
   // -----Calculate surface normals with a search radius of 0.05-----
   // ----------------------------------------------------------------
@@ -127,11 +128,11 @@ int main() {
     // -----Open 3D viewer and add point cloud-----
     // --------------------------------------------
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-    viewer->setBackgroundColor (0, 0, 0);
+    viewer->setBackgroundColor (255, 255, 255);
     pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> rgb(cloud_ptr);
     viewer->addPointCloud<pcl::PointXYZRGBA> (cloud_ptr, rgb, "sample cloud");
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-    viewer->addCoordinateSystem (1.0);
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "sample cloud");
+    // viewer->addCoordinateSystem (1.0);
     viewer->initCameraParameters ();
 
     std::cout << cloud_ptr->points[0] << "\n" ;

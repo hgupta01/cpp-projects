@@ -14,11 +14,12 @@ typedef std::vector<int> MyList;
 class SURFDescriptor{
 private:
 	cv::Mat src_img, trg_img;
+  float ratio_thresh = 0.5f;
   MyList src_pnts, trg_pnts;
 
 public:
   SURFDescriptor(){};
-  SURFDescriptor(std::string src, std::string trg);
+  SURFDescriptor(std::string src, std::string trg, float f);
   void calculateMatchingPoints();
   // inline void setSrcImg(std::string file){src_img = cv::imread(file, cv::IMREAD_GRAYSCALE);};
   // inline void setTrgImg(std::string file){trg_img = cv::imread(file, cv::IMREAD_GRAYSCALE);};
@@ -26,9 +27,10 @@ public:
   inline MyList getTrgPnts(){return trg_pnts;};
 };
 
-SURFDescriptor::SURFDescriptor(std::string src, std::string trg){
+SURFDescriptor::SURFDescriptor(std::string src, std::string trg, float thres){
   src_img = cv::imread(src, cv::IMREAD_GRAYSCALE);
   trg_img = cv::imread(trg, cv::IMREAD_GRAYSCALE);
+  ratio_thresh = thres;
 }
 
 void SURFDescriptor::calculateMatchingPoints(){
@@ -39,24 +41,23 @@ void SURFDescriptor::calculateMatchingPoints(){
     //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
     int minHessian = 400;
     cv::Ptr<cv::xfeatures2d::SURF> descriptor = cv::xfeatures2d::SURF::create( minHessian );
-    cv::Ptr<cv::AgastFeatureDetector> detector = cv::AgastFeatureDetector::create();
+    // cv::Ptr<cv::AgastFeatureDetector> detector = cv::AgastFeatureDetector::create();
 
     std::vector<cv::KeyPoint> keypoints1, keypoints2;
     cv::Mat descriptors1, descriptors2;
-    detector->detect(src_img, keypoints1);
-    detector->detect(trg_img, keypoints2);
+    // detector->detect(src_img, keypoints1);
+    // detector->detect(trg_img, keypoints2);
 
-    descriptor->compute(src_img, keypoints1, descriptors1);
-    descriptor->compute(trg_img, keypoints2, descriptors2);
-    // detector->detectAndCompute( img1, noArray(), keypoints1, descriptors1 );
-    // detector->detectAndCompute( img2, noArray(), keypoints2, descriptors2 );
+    // descriptor->compute(src_img, keypoints1, descriptors1);
+    // descriptor->compute(trg_img, keypoints2, descriptors2);
+    descriptor->detectAndCompute( src_img, cv::noArray(), keypoints1, descriptors1 );
+    descriptor->detectAndCompute( trg_img, cv::noArray(), keypoints2, descriptors2 );
     
     // Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
     cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE);
     std::vector< std::vector<cv::DMatch> > knn_matches;
     matcher->knnMatch( descriptors1, descriptors2, knn_matches, 2);
     //-- Filter matches using the Lowe's ratio test
-    const float ratio_thresh = 0.5f;
     std::vector<cv::DMatch> good_matches;
     for (size_t i = 0; i < knn_matches.size(); i++)
     {
@@ -65,6 +66,12 @@ void SURFDescriptor::calculateMatchingPoints(){
             good_matches.push_back(knn_matches[i][0]);
         }
     }
+    // cv::Mat img_matches;
+    // cv::drawMatches( src_img, keypoints1, trg_img, keypoints2, good_matches, img_matches, cv::Scalar::all(-1),
+    //              cv::Scalar::all(-1), std::vector<char>(), cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
+    // //-- Show detected matches
+    // cv::imshow("Good Matches", img_matches );
+    // cv::waitKey(0);
 
 		int count = 0;
     for (auto match: good_matches){

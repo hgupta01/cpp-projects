@@ -5,3 +5,4 @@ find_package(Eigen3 REQUIRED)
 
 
 add_executable(main main.cpp)
+#add_library(main SHARED main.cpp)
